@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/18 14:44:48 by user42            #+#    #+#             */
-/*   Updated: 2020/08/18 15:32:19 by user42           ###   ########.fr       */
+/*   Updated: 2020/08/18 15:36:11 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,6 @@
 #define SUCCESS_CODE 0
 
 #define TEST(test, ...) (test(__VA_ARGS__) == SUCCESS_CODE) ? printf("%s%s (l:%d): [%s]\n%s", GREEN, #test, __LINE__, "OK", RESET) : printf("%s%s (l:%d): [%s]\nARGS : " #__VA_ARGS__ "\n%s", RED, #test, __LINE__, "KO", RESET)
-
-size_t ft_strlen(const char *s)
-{
-	int i;
-
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
-}
 
 char    *strings[] = {"ABCDEF", "Hello World!", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 					"BBBBBBBBB", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "\n\n\n\n\n\n\n\n\n", "", "\0\0\0\0\0\0\0\0\0\0",
