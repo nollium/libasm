@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/18 14:44:48 by user42            #+#    #+#             */
-/*   Updated: 2020/08/18 15:36:11 by user42           ###   ########.fr       */
+/*   Updated: 2020/08/18 17:46:51 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,12 @@ char    *strings[] = {"ABCDEF", "Hello World!", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 					"BBBBBBBBB", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "\n\n\n\n\n\n\n\n\n", "", "\0\0\0\0\0\0\0\0\0\0",
 					"\\\\\\\\\\\\", "\"\"\"\"\'\'\'\'''"};
 
+int	ft_strlen(char *str)
+{
+	(void)str;
+	return(0);
+}
+
 int strlen_test(char **split)
 {
 	int 	i;
@@ -53,8 +59,11 @@ int strlen_test(char **split)
 	return (0);
 }
 
+extern int get_n();
+
 int main(void)
 {
-	TEST(strlen_test, strings);
+	//TEST(strlen_test, strings);
+	printf("%d\n", get_n());
 	return (0);
 }
