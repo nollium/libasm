@@ -6,7 +6,7 @@
 #    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/08/18 18:31:28 by user42            #+#    #+#              #
-#    Updated: 2020/08/18 18:41:25 by user42           ###   ########.fr        #
+#    Updated: 2020/08/19 15:30:13 by user42           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,11 +14,11 @@ NAME = exe
 
 ASM = nasm
 CC = clang-9
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -g3 
 
 ASM_FORMAT = -felf64
 
-ASM_SRC = get_n.s ft_strlen.s
+ASM_SRC = get_n.s ft_strlen.s ft_strcpy.s
 
 C_SRC = driver.c
 
@@ -28,7 +28,7 @@ ASM_OBJ = $(ASM_SRC:.s=.o)
 all: $(NAME)
 
 $(NAME): $(ASM_OBJ) $(C_SRC)
-		$(CC) $(C_SRC) $(ASM_OBJ) -o $(NAME)
+		$(CC) $(CFLAGS) $(C_SRC) $(ASM_OBJ) -o $(NAME)
 
 %.o: %.s
 	$(ASM) $(ASM_FORMAT) $<
