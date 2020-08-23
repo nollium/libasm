@@ -6,7 +6,7 @@
 #    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/08/18 18:31:28 by user42            #+#    #+#              #
-#    Updated: 2020/08/23 14:11:14 by user42           ###   ########.fr        #
+#    Updated: 2020/08/23 20:31:36 by user42           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,12 +18,14 @@ CFLAGS = -Wall -Wextra -g3
 
 ASM_FORMAT = -felf64 -g
 
-ASM_SRC = get_n.s ft_strlen.s ft_strcpy.s ft_strcmp.s
+ASM_SRC = ft_strlen.s ft_strcpy.s ft_strcmp.s \
+		  ft_write.s ft_read.s ft_strdup.s
 
 C_SRC = driver.c
 
 ASM_OBJ = $(ASM_SRC:.s=.o)
 
+TRASH = log real_output ft_ouput
 
 all: $(NAME)
 
@@ -34,7 +36,7 @@ $(NAME): $(ASM_OBJ) $(C_SRC)
 	$(ASM) $(ASM_FORMAT) $<
 
 clean:
-	rm -rf $(ASM_OBJ)
+	rm -rf $(ASM_OBJ) $(TRASH)
 
 fclean: clean
 	rm -rf $(NAME)

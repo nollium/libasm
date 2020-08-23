@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/18 14:44:48 by user42            #+#    #+#             */
-/*   Updated: 2020/08/23 14:28:57 by user42           ###   ########.fr       */
+/*   Updated: 2020/08/23 20:31:26 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <math.h>
+#include <errno.h>
 
 #define BLACK	 	"\e[30m"
 #define RED 		"\e[31m"
@@ -30,16 +31,17 @@
 #define RESET 		"\e[0m"
 
 #define SUCCESS_CODE 0
-#define READ_SIZE	256
+#define READ_SIZE	1024
 
-#define TEST(test, ...) (test(__VA_ARGS__) == SUCCESS_CODE) ? fprintf(stdout, "%sl:%d| %s(%s): [%s]\n%s", GREEN, __LINE__, #test, #__VA_ARGS__, "OK", RESET) : \
-fprintf(stderr,"%sl:%d| %s(%s): [%s]\n%s", RED, __LINE__, #test, #__VA_ARGS__, "KO", RESET)
+#define TEST(test) (test == SUCCESS_CODE) ? \
+fprintf(stdout, "%s%s |l:%d| %s\n%s", GREEN, "[OK]", __LINE__, #test , RESET) : \
+fprintf(stderr, "%s%s |l:%d| %s\n%s", RED, "[KO]", __LINE__, #test, RESET)
 
 #define TEST_TXT "bible"
 
 char    *strings[] = {"ABCDEF", "Hello World!", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 					"BBBBBBBBB", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "\n\n\n\n\n\n\n\n\n", "", "\0\0\0\0\0\0\0\0\0\0",
-					"\\\\\\\\\\\\", "\"\"\"\"\'\'\'\'''", "", "a", 0};
+					"\\\\\\\\\\\\", "\"\"\"\"\'\'\'\'''", "", "", "a", "a", "AAA", "AAA", "AAA", 0};
 int		get_n();
 size_t	ft_strlen(const char *str);
 
@@ -70,6 +72,30 @@ int     ft_strcmp(const char *s1, const char *s2)
                 i++;
         }
         return (res);
+}
+*/
+;
+
+ssize_t ft_write(int fd, const void *buf, size_t n)
+/*
+{
+	return (write(fd, buf, n));
+}
+*/
+;
+
+ssize_t ft_read(int fd, void *buf, size_t n)
+/*
+{
+	return (read(fd, buf, n));
+}
+*/
+;
+
+char	*ft_strdup(const char *s)
+/*
+{
+	return(strdup(s));
 }
 */
 ;
@@ -177,22 +203,156 @@ int	str_test(int (*test)(char *))
 	return (err);
 }
 
-void print_shit(char *a, char *b, int c)
+void print_shit(int a, int b, int c)
 {
 	printf("/******************\\\n");
-	printf("|    a: %s          |\n", a);
-	printf("|    b: %s          |\n", b);
-	printf("|    c: %d          |\n", c);
+	printf("|    a: %-11d|\n", a);
+	printf("|    b: %-11d|\n", b);
+	printf("|    c: %-11d|\n", c);
 	printf("\\******************/\n");
+}
+
+int		tst_write(char *filename, char *src, char **dst,
+ssize_t (*func)(int fd, const void *, size_t))
+{
+	char	*buf;
+	int		error;
+	size_t	len;
+	int		fd;
+
+	len =  strlen(src);
+	buf = calloc(1, len + 1);
+	fd = open(filename, O_RDWR | O_CREAT, 0664);
+	error = func(fd, src, len);
+	close(fd);
+	fd = open(filename, O_RDWR | O_CREAT, 0664);
+	read(fd, buf, len);
+	close(fd);
+	*dst = buf;
+	return (error);
+}
+
+int		write_cmp(char *arg)
+{
+	char	*ft;
+	char	*real;
+	int		ft_error;
+	int		real_error;
+	int		error;
+	
+	error = SUCCESS_CODE;
+	real_error = tst_write("real_output", arg, &real, write);
+	ft_error = tst_write("ft_ouput", arg, &ft, ft_write);
+	if ((error |= (real_error != ft_error)))
+		fprintf(stderr, RED "[WRITE] RETURN ERROR (%s): WRITE: [%d]\
+		 FT_WRITE: [%d]\n" RESET, arg, real_error, ft_error);
+	if ((error |= strcmp(real, ft)))
+		fprintf(stderr, RED "[WRITE] ERROR (%s): WRITE: [%s] FT_WRITE: [%s]\n" RESET, arg, real, ft);
+	return (error);
+}
+
+int		tst_read(char *filename, char *src, char **dst,
+ssize_t (*func)(int fd, void *, size_t))
+{
+	char	*buf;
+	int		error;
+	size_t	len;
+	int		fd;
+
+	len =  strlen(src);
+	buf = calloc(1, len + 1);
+	fd = open(filename, O_RDWR | O_CREAT, 0664);
+	write(fd, src, len);
+	close(fd);
+	fd = open(filename, O_RDWR | O_CREAT, 0664);
+	error = func(fd, buf, len);
+	close(fd);
+	*dst = buf;
+	return (error);
+}
+
+int		read_cmp(char *arg)
+{
+	char	*ft;
+	char	*real;
+	int		ft_error;
+	int		real_error;
+	int		error;
+	
+	error = SUCCESS_CODE;
+	real_error = tst_read("real_output", arg, &real, read);
+	ft_error = tst_read("ft_ouput", arg, &ft, ft_read);
+	if ((error |= (real_error != ft_error)))
+		fprintf(stderr, RED "[READ] RETURN ERROR (%s): READ: [%d]\
+		 FT_READ: [%d]\n" RESET, arg, real_error, ft_error);
+	if ((error |= strcmp(real, ft)))
+		fprintf(stderr, RED "[READ] ERROR (%s): READ: [%s] FT_READ: [%s]\n" RESET, arg, real, ft);
+	return (error);
+}
+
+int		file_test(ssize_t (*real_funct)(), ssize_t (*ft_funct)())
+{
+	int	error = SUCCESS_CODE;
+	int real_error;
+	int	ft_error;
+	int	real_errno;
+	int	ft_errno;
+	char	*buf;
+	int		fd;
+	
+	buf = malloc(200);
+	fd = open(TEST_TXT, O_RDONLY);
+	real_error = real_funct(fd, buf + 100, -42);
+	real_errno = errno;
+	close(fd);
+	fd = open(TEST_TXT, O_RDONLY);
+	ft_error = ft_funct(fd, buf + 100, -42);
+	ft_errno = errno;
+	close(fd);
+	if ((error |= (ft_errno != real_errno)))
+		fprintf(stderr, RED "[FILE] RETURN ERROR (%s): REAL: [%d]\
+		 FT: [%d]\n" RESET, "n=-42", real_errno, ft_errno);	
+	if ((error |= (real_error != ft_error)))
+		fprintf(stderr, RED "[FILE] RETURN ERROR (%s): REAL: [%d]\
+		 FT: [%d]\n" RESET, "n=-42", real_error, ft_error);
+	free(buf);
+	return (error);
+}
+
+int	strdup_cmp(char *arg)
+{
+	char	*dup;
+
+	dup = ft_strdup(arg);
+	if (!dup)
+		return (1);
+	if (strcmp(arg,dup))
+	{
+		fprintf(stderr, "%s[STRDUP] ERROR: REAL [%s] FT_STRDUP [%s]\n%s",
+		RED, arg, dup, RESET);
+		return (1);
+	}
+	return (SUCCESS_CODE);
 }
 
 int main(void)
 {
-	//TEST(str_test, strlen_cmp);
-	//TEST(str_test, strcpy_cmp);
-	TEST(str_test, strcmp_cmp);
+	TEST(str_test(strlen_cmp));
+	TEST(str_test(strcpy_cmp));
+	TEST(str_test(strcmp_cmp));
+	TEST(str_test(write_cmp));
+	TEST(file_test(write, ft_write));
+	TEST(str_test(read_cmp));
+	TEST(file_test(read, ft_read));
+	TEST(str_test(strdup_cmp));
+	//printf("%c%c%c\n", dup[0], dup[1], dup[2]);
+	//write_cmp("salut les amis");
+	//#define STR "salut les amis\n"
+	//ssize_t	error[2];
+	//error[0] = ft_write(1, RED STR, sizeof(RED STR));
+	//error[1] = write(1, GREEN STR, sizeof(GREEN STR));
+	//printf(RESET "%zd %zd\n", error[0], error[1]);
 	//printf("%d %d\n", strcmp("1", "1"), ft_strcmp("12", "12"));
-	printf(MAGENTA"%d\n"RESET, get_n());
 	//printf("%zu\n", ft_strlen("012345"));
 	return (0);
 }
