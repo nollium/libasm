@@ -4,8 +4,8 @@ ft_strcpy:
 	xor     rdx, rdx;	i = 0
 
 loop:
-	mov	eax, [rsi + rdx];	tmp = src[i]
-	mov [rdi + rdx], eax; 	dst[i] = tmp
+	mov	ah, [rsi + rdx];	tmp = src[i]
+	mov [rdi + rdx], ah; 	dst[i] = tmp
 	cmp byte [rsi + rdx], byte 0; if src[i] == 0
 	je end; 						|then	jump to end
 	inc rdx; 						|else	| i++

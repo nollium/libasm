@@ -6,7 +6,7 @@
 #    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/08/18 18:31:28 by user42            #+#    #+#              #
-#    Updated: 2020/08/19 15:30:13 by user42           ###   ########.fr        #
+#    Updated: 2020/08/23 14:11:14 by user42           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,9 +16,9 @@ ASM = nasm
 CC = clang-9
 CFLAGS = -Wall -Wextra -g3 
 
-ASM_FORMAT = -felf64
+ASM_FORMAT = -felf64 -g
 
-ASM_SRC = get_n.s ft_strlen.s ft_strcpy.s
+ASM_SRC = get_n.s ft_strlen.s ft_strcpy.s ft_strcmp.s
 
 C_SRC = driver.c
 
