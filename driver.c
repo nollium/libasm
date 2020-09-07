@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/18 14:44:48 by user42            #+#    #+#             */
-/*   Updated: 2020/08/23 20:31:26 by user42           ###   ########.fr       */
+/*   Updated: 2020/09/07 18:04:31 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,15 +239,34 @@ int		write_cmp(char *arg)
 	int		ft_error;
 	int		real_error;
 	int		error;
-	
+	int		ft_errno;
+	int		real_errno;
+
+	errno = -777;
 	error = SUCCESS_CODE;
 	real_error = tst_write("real_output", arg, &real, write);
+	real_errno = errno;
+	errno = -777;
 	ft_error = tst_write("ft_ouput", arg, &ft, ft_write);
-	if ((error |= (real_error != ft_error)))
+	ft_errno = errno;
+	errno = -777;
+	if (real_errno != ft_errno)
+	{
+		error = 1;
+		fprintf(stderr, RED "[WRITE] ERRMO ERROR (%s): WRITE: [%d]\
+		 FT_WRITE: [%d]\n" RESET, arg, real_errno, ft_errno);
+	}
+	if (real_error != ft_error)
+	{
+		error = 1;
 		fprintf(stderr, RED "[WRITE] RETURN ERROR (%s): WRITE: [%d]\
 		 FT_WRITE: [%d]\n" RESET, arg, real_error, ft_error);
-	if ((error |= strcmp(real, ft)))
+	}
+	if (strcmp(real, ft))
+	{
 		fprintf(stderr, RED "[WRITE] ERROR (%s): WRITE: [%s] FT_WRITE: [%s]\n" RESET, arg, real, ft);
+		error = 1;
+	}
 	return (error);
 }
 
@@ -278,15 +297,34 @@ int		read_cmp(char *arg)
 	int		ft_error;
 	int		real_error;
 	int		error;
+	int		ft_errno;
+	int		real_errno;
 	
 	error = SUCCESS_CODE;
+	errno = -777;
 	real_error = tst_read("real_output", arg, &real, read);
+	real_errno = errno;
+	errno = -777;
 	ft_error = tst_read("ft_ouput", arg, &ft, ft_read);
-	if ((error |= (real_error != ft_error)))
+	ft_errno=errno;
+	errno = -777;
+	if (real_errno != ft_errno)
+	{
+		error = 1;
+		fprintf(stderr, RED "[READ] ERRMO ERROR (%s): READ: [%d]\
+		 FT_READ: [%d]\n" RESET, arg, real_errno, ft_errno);
+	}
+	if (real_error != ft_error)
+	{
+		error = 1;
 		fprintf(stderr, RED "[READ] RETURN ERROR (%s): READ: [%d]\
 		 FT_READ: [%d]\n" RESET, arg, real_error, ft_error);
-	if ((error |= strcmp(real, ft)))
+	}
+	if (strcmp(real, ft))
+	{
 		fprintf(stderr, RED "[READ] ERROR (%s): READ: [%s] FT_READ: [%s]\n" RESET, arg, real, ft);
+		error = 1;
+	}
 	return (error);
 }
 
@@ -301,18 +339,21 @@ int		file_test(ssize_t (*real_funct)(), ssize_t (*ft_funct)())
 	int		fd;
 	
 	buf = malloc(200);
-	fd = open(TEST_TXT, O_RDONLY);
+	fd = open("./", O_RDONLY);
+	errno = -8888;
 	real_error = real_funct(fd, buf + 100, -42);
 	real_errno = errno;
+	errno = -8888;
 	close(fd);
-	fd = open(TEST_TXT, O_RDONLY);
+	fd = open("./", O_RDONLY);
 	ft_error = ft_funct(fd, buf + 100, -42);
 	ft_errno = errno;
+	errno = -8888;
 	close(fd);
 	if ((error |= (ft_errno != real_errno)))
-		fprintf(stderr, RED "[FILE] RETURN ERROR (%s): REAL: [%d]\
-		 FT: [%d]\n" RESET, "n=-42", real_errno, ft_errno);	
-	if ((error |= (real_error != ft_error)))
+		fprintf(stderr, RED "[FILE] l:%d ERRNO ERROR (%s): REAL: [%d]\
+		 FT: [%d]\n" RESET, __LINE__, "n=-42", real_errno, ft_errno);	
+	if (real_error != ft_error && (error=1))
 		fprintf(stderr, RED "[FILE] RETURN ERROR (%s): REAL: [%d]\
 		 FT: [%d]\n" RESET, "n=-42", real_error, ft_error);
 	free(buf);
@@ -334,9 +375,14 @@ int	strdup_cmp(char *arg)
 	}
 	return (SUCCESS_CODE);
 }
+void set_erno(void);
 
 int main(void)
 {
+	errno=0;
+	//set_erno();
+	//printf("%d\n", errno);
+	//return (0);
 	TEST(str_test(strlen_cmp));
 	TEST(str_test(strcpy_cmp));
 	TEST(str_test(strcmp_cmp));
