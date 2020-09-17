@@ -10,10 +10,12 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = exe
+NAME = libasm.a
+EXE=exe
 
 ASM = nasm
 CC = clang-9
+LIBMAKER = ar rcs
 CFLAGS = -Wall -Wextra -g3 
 
 ASM_FORMAT = -felf64 -g
@@ -21,7 +23,7 @@ ASM_FORMAT = -felf64 -g
 ASM_SRC = ft_strlen.s ft_strcpy.s ft_strcmp.s \
 		  ft_write.s ft_read.s ft_strdup.s
 
-C_SRC = driver.c
+C_SRC = main.c
 
 ASM_OBJ = $(ASM_SRC:.s=.o)
 
@@ -29,8 +31,16 @@ TRASH = log real_output ft_ouput
 
 all: $(NAME)
 
-$(NAME): $(ASM_OBJ) $(C_SRC)
-		$(CC) $(CFLAGS) $(C_SRC) $(ASM_OBJ) -o $(NAME)
+$(NAME): $(ASM_OBJ) $(ASM_SRC)
+		$(LIBMAKER) $(NAME) $(ASM_OBJ)
+
+
+$(EXE): $(C_SRC) $(NAME)
+	$(CC) $(CFLAGS) $(C_SRC) $(ASM_OBJ) -o $(EXE)
+
+
+run: $(NAME) $(EXE)
+
 
 %.o: %.s
 	$(ASM) $(ASM_FORMAT) $<
@@ -40,6 +50,7 @@ clean:
 
 fclean: clean
 	rm -rf $(NAME)
+	rm -rf $(EXE)
 
 re: fclean all
 

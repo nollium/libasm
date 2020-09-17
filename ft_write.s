@@ -1,5 +1,4 @@
 global ft_write
-extern print_shit
 extern __errno_location
 
 section .text:
